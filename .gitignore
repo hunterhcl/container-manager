@@ -15,3 +15,7 @@ Package.resolved
 *.xcworkspace/
 xcuserdata/
 DerivedData/
+
+# Build output
+build/
+*.iconset/
