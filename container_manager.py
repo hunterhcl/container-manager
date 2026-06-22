@@ -39,7 +39,7 @@ def container_available() -> bool:
 
 
 def pull_image(image: str, platform: str = "linux/arm64") -> dict:
-    args = [CONTAINER_BIN, "pull", "--platform", platform, image]
+    args = [CONTAINER_BIN, "image", "pull", "--platform", platform, image]
     return run_cmd(args, timeout=600)
 
 
@@ -101,7 +101,7 @@ def inspect_image(image: str) -> dict:
 
 
 def system_status() -> dict:
-    result = run_cmd([CONTAINER_BIN, "system", "info"])
+    result = run_cmd([CONTAINER_BIN, "system", "status"])
     if not result["ok"]:
         result = run_cmd([CONTAINER_BIN, "--version"])
     return result

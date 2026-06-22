@@ -64,7 +64,7 @@ enum ContainerCLI {
     }
 
     static func pullImage(_ image: String, platform: String) async -> (ok: Bool, message: String) {
-        let r = await run(["pull", "--platform", platform, image])
+        let r = await run(["image", "pull", "--platform", platform, image])
         return r.ok ? (true, "Pulled: \(image)") : (false, r.stderr.isEmpty ? "Failed" : r.stderr)
     }
 
