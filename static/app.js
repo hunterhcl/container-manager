@@ -541,7 +541,8 @@ function log(type, message) {
     $("#log-area").classList.remove("hidden");
 }
 
-function copyLog() {
+function copyLog(e) {
+    if (e) e.stopPropagation();
     const logBody = $("#log-body");
     const text = Array.from(logBody.children)
         .map((el) => el.textContent)
@@ -549,7 +550,6 @@ function copyLog() {
     navigator.clipboard.writeText(text).then(() => {
         log("ok", "Log copied to clipboard");
     }).catch(() => {
-        // Fallback: select text manually
         const range = document.createRange();
         range.selectNodeContents(logBody);
         const sel = window.getSelection();
@@ -559,7 +559,8 @@ function copyLog() {
     });
 }
 
-function clearLog() {
+function clearLog(e) {
+    if (e) e.stopPropagation();
     $("#log-body").innerHTML = "";
 }
 

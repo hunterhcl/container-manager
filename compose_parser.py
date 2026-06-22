@@ -16,15 +16,10 @@ def extract_services(data: dict) -> dict:
 
 def resolve_image_registry(image: str) -> str:
     """Resolve image to full registry path.
-    - No '/' → Docker Hub official (unchanged)
-    - One '/' and first part has no '.' → ghcr.io prefix
-    - Already has registry (first part contains '.') → as-is
+    - No '/' → Docker Hub official (docker.io/library/...)
+    - One '/' without '.' in first part → Docker Hub user image (as-is, CLI handles it)
+    - First part contains '.' → custom registry, keep as-is
     """
-    parts = image.split("/")
-    if len(parts) == 1:
-        return image
-    if len(parts) == 2 and "." not in parts[0]:
-        return f"ghcr.io/{image}"
     return image
 
 
