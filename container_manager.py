@@ -34,7 +34,7 @@ def run_cmd(args: list[str], timeout: int = 300) -> dict:
 
 
 def container_available() -> bool:
-    result = run_cmd([CONTAINER_BIN, "version"])
+    result = run_cmd([CONTAINER_BIN, "--version"])
     return result["ok"]
 
 
@@ -103,7 +103,7 @@ def inspect_image(image: str) -> dict:
 def system_status() -> dict:
     result = run_cmd([CONTAINER_BIN, "system", "info"])
     if not result["ok"]:
-        result = run_cmd([CONTAINER_BIN, "version"])
+        result = run_cmd([CONTAINER_BIN, "--version"])
     return result
 
 

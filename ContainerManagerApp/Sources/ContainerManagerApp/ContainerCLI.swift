@@ -59,7 +59,7 @@ enum ContainerCLI {
     // MARK: - Container operations
 
     static func isAvailable() async -> Bool {
-        let r = await run(["version"])
+        let r = await run(["--version"])
         return r.ok
     }
 
