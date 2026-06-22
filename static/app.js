@@ -24,10 +24,10 @@ async function checkStatus() {
         const data = await res.json();
         const badge = $("#status-badge");
         if (data.container_available) {
-            badge.textContent = "container CLI: ok";
+            badge.textContent = "docker CLI: ok";
             badge.className = "status-badge ok";
         } else {
-            badge.textContent = "container CLI: not found";
+            badge.textContent = "docker CLI: not found";
             badge.className = "status-badge error";
         }
     } catch {
@@ -230,7 +230,6 @@ async function pullImages() {
     state.pulling = true;
     const btn = $("#btn-pull");
     btn.innerHTML = '<span class="spinner"></span> Pulling...';
-    btn.disabled = true;
 
     log("info", `Pulling images for linux/${state.arch}...`);
 
@@ -256,11 +255,10 @@ async function pullImages() {
         }
     } catch (e) {
         log("error", `Pull failed: ${e.message}`);
+    } finally {
+        btn.innerHTML = "Pull All";
+        state.pulling = false;
     }
-
-    btn.innerHTML = "Pull All";
-    btn.disabled = false;
-    state.pulling = false;
 }
 
 // --- Export ---
@@ -270,7 +268,6 @@ async function exportImages() {
     state.exporting = true;
     const btn = $("#btn-export");
     btn.innerHTML = '<span class="spinner"></span> Exporting...';
-    btn.disabled = true;
 
     log("info", `Exporting images as tar.gz for linux/${state.arch}...`);
 
@@ -296,11 +293,10 @@ async function exportImages() {
         }
     } catch (e) {
         log("error", `Export failed: ${e.message}`);
+    } finally {
+        btn.innerHTML = "Export tar.gz";
+        state.exporting = false;
     }
-
-    btn.innerHTML = "Export tar.gz";
-    btn.disabled = false;
-    state.exporting = false;
 }
 
 // --- Check ---
@@ -483,7 +479,8 @@ async function showDependencyGraph() {
 
 // --- Compose editor ---
 
-function openEditor() {
+function openEditor(e) {
+    if (e) e.stopPropagation();
     const panel = $("#editor-panel");
     const editor = $("#compose-editor");
 
@@ -492,9 +489,9 @@ function openEditor() {
         return;
     }
 
-    editor.value = state.rawYaml;
+    editor.value = state.rawYaml || "";
     panel.classList.remove("hidden");
-    editor.focus();
+    setTimeout(() => editor.focus(), 50);
 }
 
 async function saveCompose() {

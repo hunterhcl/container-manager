@@ -1,11 +1,9 @@
 import subprocess
 import shutil
-import json
-import os
 import re
 from pathlib import Path
 
-CONTAINER_BIN = shutil.which("container") or "container"
+DOCKER_BIN = shutil.which("docker") or "docker"
 UPLOAD_DIR = Path(__file__).parent / "uploads"
 EXPORT_DIR = Path(__file__).parent / "exports"
 EXPORT_DIR.mkdir(exist_ok=True)
@@ -34,17 +32,16 @@ def run_cmd(args: list[str], timeout: int = 300) -> dict:
 
 
 def container_available() -> bool:
-    result = run_cmd([CONTAINER_BIN, "--version"])
+    result = run_cmd([DOCKER_BIN, "version"])
     return result["ok"]
 
 
 def pull_image(image: str, platform: str = "linux/arm64") -> dict:
-    args = [CONTAINER_BIN, "image", "pull", "--platform", platform, image]
+    args = [DOCKER_BIN, "pull", "--platform", platform, image]
     return run_cmd(args, timeout=600)
 
 
 def pull_all_images(images: list[dict], platform: str = "linux/arm64") -> list[dict]:
-    """Pull images. Each item: {"original": ..., "resolved": ...}"""
     results = []
     for img_info in images:
         if isinstance(img_info, str):
@@ -58,12 +55,11 @@ def pull_all_images(images: list[dict], platform: str = "linux/arm64") -> list[d
 
 
 def save_image(image: str, output_path: str) -> dict:
-    args = [CONTAINER_BIN, "image", "save", "-o", output_path, image]
+    args = [DOCKER_BIN, "save", "-o", output_path, image]
     return run_cmd(args, timeout=600)
 
 
 def export_all_images(images: list[dict], platform: str = "linux/arm64", dest_dir: str | None = None) -> list[dict]:
-    """Export images. Each item: {"original": ..., "resolved": ...}"""
     dest = Path(dest_dir) if dest_dir else EXPORT_DIR
     dest.mkdir(parents=True, exist_ok=True)
     results = []
@@ -93,17 +89,17 @@ def export_all_images(images: list[dict], platform: str = "linux/arm64", dest_di
 
 
 def list_images() -> dict:
-    return run_cmd([CONTAINER_BIN, "image", "list"])
+    return run_cmd([DOCKER_BIN, "images", "--format", "table {{.Repository}}:{{.Tag}}\t{{.Size}}\t{{.ID}}"])
 
 
 def inspect_image(image: str) -> dict:
-    return run_cmd([CONTAINER_BIN, "image", "inspect", image])
+    return run_cmd([DOCKER_BIN, "inspect", image])
 
 
 def system_status() -> dict:
-    result = run_cmd([CONTAINER_BIN, "system", "status"])
+    result = run_cmd([DOCKER_BIN, "info", "--format", "{{.ServerVersion}}"])
     if not result["ok"]:
-        result = run_cmd([CONTAINER_BIN, "--version"])
+        result = run_cmd([DOCKER_BIN, "version"])
     return result
 
 

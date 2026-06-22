@@ -124,14 +124,27 @@ struct ContentView: View {
 
             Spacer()
 
-            actionButton("Pull All", icon: "arrow.down.circle", primary: true) { pullAll() }
-                .disabled(state.isPulling)
-            actionButton("Export tar.gz", icon: "archivebox") { exportAll() }
-                .disabled(state.isExporting)
+            if state.isPulling {
+                ProgressView().controlSize(.small)
+                Text("Pulling...").font(.caption)
+            } else {
+                actionButton("Pull All", icon: "arrow.down.circle", primary: true) { pullAll() }
+            }
+            if state.isExporting {
+                ProgressView().controlSize(.small)
+                Text("Exporting...").font(.caption)
+            } else {
+                actionButton("Export tar.gz", icon: "archivebox") { exportAll() }
+            }
             actionButton("Check", icon: "checkmark.shield") { checkConnections() }
             actionButton(".env", icon: "key") { generateEnv() }
             actionButton("Resources", icon: "gauge.medium") { estimateResources() }
-            actionButton("Edit YAML", icon: "pencil.and.list.clipboard") { state.showEditor.toggle() }
+            actionButton("Edit YAML", icon: "pencil.and.list.clipboard") {
+                if state.editorContent.isEmpty, let raw = state.composeFile?.raw {
+                    state.editorContent = raw
+                }
+                state.showEditor.toggle()
+            }
         }
         .padding(14)
         .background(Theme.surface)
@@ -469,6 +482,7 @@ struct ContentView: View {
         state.log(.info, "Pulling \(resolved.count) images for \(platform)...")
 
         Task {
+            defer { Task { @MainActor in state.isPulling = false } }
             for pair in resolved {
                 let r = await ContainerCLI.pullImage(pair.resolved, platform: platform)
                 let extra = pair.resolved != pair.original ? " (via \(pair.resolved))" : ""
@@ -476,7 +490,6 @@ struct ContentView: View {
                     state.log(r.ok ? .ok : .error, r.ok ? "Pulled: \(pair.original)\(extra)" : "Failed: \(pair.original)\(extra) — \(r.message)")
                 }
             }
-            await MainActor.run { state.isPulling = false }
         }
     }
 
@@ -496,6 +509,7 @@ struct ContentView: View {
         state.log(.info, "Exporting \(resolved.count) images to \(destURL.path)...")
 
         Task {
+            defer { Task { @MainActor in state.isExporting = false } }
             for pair in resolved {
                 let r = await ContainerCLI.exportImage(pair.resolved, platform: platform, destDir: destURL)
                 await MainActor.run {
@@ -506,7 +520,6 @@ struct ContentView: View {
                     }
                 }
             }
-            await MainActor.run { state.isExporting = false }
         }
     }
 
