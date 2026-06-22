@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTInform Container Manager</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="app">
+    <header>
+        <h1><span>RTInform</span> Container Manager</h1>
+        <span id="status-badge" class="status-badge">checking...</span>
+    </header>
+
+    <div id="upload-zone" class="upload-zone">
+        <div class="icon">&#9776;</div>
+        <div><strong>Drop docker-compose.yaml here</strong></div>
+        <p>or click to select file</p>
+        <input type="file" id="file-input" accept=".yaml,.yml">
+    </div>
+
+    <div id="controls" class="controls">
+        <label for="arch-select">Architecture:</label>
+        <select id="arch-select">
+            <option value="arm64" selected>ARM64 (Apple Silicon)</option>
+            <option value="amd64">AMD64 (x86_64)</option>
+        </select>
+
+        <button id="btn-pull" class="btn primary" disabled>Pull All</button>
+        <button id="btn-export" class="btn" disabled>Export tar.gz</button>
+        <button id="btn-check" class="btn" disabled>Check Connections</button>
+        <button id="btn-env" class="btn" disabled>Generate .env</button>
+        <button id="btn-resources" class="btn" disabled>Resources</button>
+        <button id="btn-graph" class="btn" disabled>Dep Graph</button>
+    </div>
+
+    <div class="panels">
+        <div id="services-panel" class="panel hidden">
+            <div class="panel-header">
+                Services <span id="services-count" class="count">0</span>
+            </div>
+            <div id="services-body" class="panel-body"></div>
+        </div>
+
+        <div id="images-panel" class="panel hidden">
+            <div class="panel-header">
+                Images <span id="images-count" class="count">0</span>
+            </div>
+            <div id="images-body" class="panel-body"></div>
+        </div>
+
+        <div id="ports-panel" class="panel hidden">
+            <div class="panel-header">
+                Ports <span id="ports-count" class="count">0</span>
+            </div>
+            <div id="ports-body" class="panel-body"></div>
+        </div>
+
+        <div id="deps-panel" class="panel hidden">
+            <div class="panel-header">
+                Dependencies <span id="deps-count" class="count">0</span>
+            </div>
+            <div id="deps-body" class="panel-body"></div>
+        </div>
+
+        <div id="issues-panel" class="panel full-width hidden">
+            <div class="panel-header">Validation Results</div>
+            <div id="issues-body" class="panel-body"></div>
+        </div>
+
+        <div id="env-panel" class="panel full-width hidden">
+            <div class="panel-header">Sample .env</div>
+            <div id="env-body" class="panel-body"></div>
+        </div>
+
+        <div id="resources-panel" class="panel full-width hidden">
+            <div class="panel-header">Resource Estimates</div>
+            <div id="resources-body" class="panel-body"></div>
+        </div>
+
+        <div id="graph-panel" class="panel full-width hidden">
+            <div class="panel-header">Dependency Graph</div>
+            <div id="graph-body" class="panel-body"></div>
+        </div>
+    </div>
+
+    <div id="log-area" class="log-area hidden">
+        <div class="panel-header">Log</div>
+        <div id="log-body" class="panel-body"></div>
+    </div>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
